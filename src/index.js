@@ -16,54 +16,63 @@ const countryListEl = document.querySelector('.country-list');
 const countryInfoEl = document.querySelector('.country-info');
 
 const renderContriesList = (countries) => {
-    const markup = countries
-      .map(country => {
-          return `<li>
-            <img src="${country.flags.svg}" width="100"/>
-            <p>${country.name.official}</p>
-        </li>`;
-      })
-        .join('');
-    countryListEl.innerHTML = markup;
+  const markup = countries
+    .map(country => {
+        return `<li class="country-item">
+          <div class="country-flag"><img src="${country.flags.svg}" width="70"/></div>
+          <p>${country.name.official}</p>
+      </li>`;
+    })
+      .join('');
+  countryListEl.innerHTML = markup;
 }
 
 const renderContriesInfo = countries => {
-  const markup = countries
-    .map(country => {
-      return `
-          <p><b>capital</b>: ${country.capital}</p>
-          <p><b>population</b>: ${country.population}</p>
-          <p><b>languages</b>: ${Object.values(country.languages).join(', ')}</p>
-        `;
-    })
-    countryInfoEl.innerHTML = markup;
+  console.log(countries[0]);
+  const country = countries[0];
+  const markup = `
+    <div class="country-name">
+      <div class="country-flag"><img src="${country.flags.svg}" width="70"/></div>
+      <p>${country.name.official}</p>
+    </div>
+    <p><b>Capital</b>: ${country.capital}</p>
+    <p><b>Population</b>: ${country.population}</p>
+    <p><b>Languages</b>: ${Object.values(country.languages).join(
+      ', '
+    )} </p>
+  `;
+  countryInfoEl.innerHTML = markup;
 };
 
-fetchCountries('c')
-    .then(countries => {
-        console.log(countries)
-        console.log(countries.length);
-        if (countries.length > 10) {
-          Notify.info(
-            'Too many matches found. Please enter a more specific name.', notifyOptions
-          );
-          return;
-        }
-        renderContriesList(countries);
-        renderContriesInfo(countries);
-    })
-  .catch(error => console.log(error));
+const clearHtml = () => {
+  countryInfoEl.innerHTML = '';
+  countryListEl.innerHTML = '';
+}
 
 const onSearchInput = (e) => {
-    const searchCountry = e.target.value;
-    console.log(searchCountry.trim());
-    console.log(searchCountry.trim().length);
-    if (searchCountry.trim().length < 2) {
-      Notify.info(
-        'Too many matches found. Please enter a more specific name.', notifyOptions
-      );
-      return;
-    }
+  const searchCountry = e.target.value;
+  const trimedSearchCountry = searchCountry.trim();
+  
+  if (!trimedSearchCountry) {
+    clearHtml();
+    return
+  }
+  fetchCountries(trimedSearchCountry)
+    .then(countries => {
+      renderContriesInfo(countries);
+      
+      if (countries.length > 10) {
+        Notify.info(
+          'Too many matches found. Please enter a more specific name.',
+          notifyOptions
+        );
+        clearHtml();
+        return;
+      }
+      renderContriesList(countries);
+       
+    })
+    .catch(error => console.log(error));
 }
 
 searchInputEl.addEventListener('input', debounce(onSearchInput, DEBOUNCE_DELAY))
