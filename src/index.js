@@ -5,7 +5,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const DEBOUNCE_DELAY = 300;
 const notifyOptions = {
-  timeout: 2500,
+  timeout: 2000,
   width: '300px',
   clickToClose: true,
   position: 'center-top',
@@ -23,7 +23,7 @@ const renderContriesList = (countries) => {
           <p>${country.name.official}</p>
       </li>`;
     })
-      .join('');
+    .join('');
   countryListEl.innerHTML = markup;
 }
 
@@ -50,27 +50,28 @@ const clearHtml = () => {
 }
 
 const onSearchInput = (e) => {
+  clearHtml();
   const searchCountry = e.target.value;
   const trimedSearchCountry = searchCountry.trim();
   
   if (!trimedSearchCountry) {
-    clearHtml();
     return
   }
   fetchCountries(trimedSearchCountry)
     .then(countries => {
-      renderContriesInfo(countries);
+      if (countries.length === 1) {
+        renderContriesInfo(countries);
+        return
+      }
       
       if (countries.length > 10) {
         Notify.info(
           'Too many matches found. Please enter a more specific name.',
           notifyOptions
         );
-        clearHtml();
         return;
       }
       renderContriesList(countries);
-       
     })
     .catch(error => console.log(error));
 }

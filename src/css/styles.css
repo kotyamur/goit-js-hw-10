@@ -38,14 +38,14 @@ body {
   margin-bottom: 10px;
 }
 
-.country-flag {
+/* .country-flag {
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   width: 70px;
   height: 40px;
-}
+} */
 
 .country-info {
   display: flex;
