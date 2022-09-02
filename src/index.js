@@ -15,21 +15,21 @@ const searchInputEl = document.querySelector('#search-box');
 const countryListEl = document.querySelector('.country-list');
 const countryInfoEl = document.querySelector('.country-info');
 
-const renderContriesList = (countries) => {
+const renderContriesList = countries => {
+  console.log(countries);
   const markup = countries
     .map(country => {
-        return `<li class="country-item">
+      return `<li class="country-item">
           <div class="country-flag"><img src="${country.flags.svg}" width="70"/></div>
           <p>${country.name.official}</p>
       </li>`;
     })
     .join('');
   countryListEl.innerHTML = markup;
-}
+};
 
-const renderContriesInfo = countries => {
-  console.log(countries[0]);
-  const country = countries[0];
+const renderContryInfo = country => {
+  console.log(country);
   const markup = `
     <div class="country-name">
       <div class="country-flag"><img src="${country.flags.svg}" width="70"/></div>
@@ -37,9 +37,7 @@ const renderContriesInfo = countries => {
     </div>
     <p><b>Capital</b>: ${country.capital}</p>
     <p><b>Population</b>: ${country.population}</p>
-    <p><b>Languages</b>: ${Object.values(country.languages).join(
-      ', '
-    )} </p>
+    <p><b>Languages</b>: ${Object.values(country.languages).join(', ')} </p>
   `;
   countryInfoEl.innerHTML = markup;
 };
@@ -47,33 +45,30 @@ const renderContriesInfo = countries => {
 const clearHtml = () => {
   countryInfoEl.innerHTML = '';
   countryListEl.innerHTML = '';
-}
+};
 
-const onSearchInput = (e) => {
+const onSearchInput = e => {
   clearHtml();
   const searchCountry = e.target.value;
   const trimedSearchCountry = searchCountry.trim();
-  
+
   if (!trimedSearchCountry) {
-    return
+    return;
   }
   fetchCountries(trimedSearchCountry)
     .then(countries => {
       if (countries.length === 1) {
-        renderContriesInfo(countries);
-        return
+        renderContryInfo(countries[0]);
+        return;
       }
-      
+
       if (countries.length > 10) {
-        Notify.info(
-          'Too many matches found. Please enter a more specific name.',
-          notifyOptions
-        );
+        Notify.info('Too many matches found. Please enter a more specific name.', notifyOptions);
         return;
       }
       renderContriesList(countries);
     })
-    .catch(error => console.log(error));
-}
+    .catch(() => Notify.failure('Oops, there is no country with that name', notifyOptions));
+};
 
-searchInputEl.addEventListener('input', debounce(onSearchInput, DEBOUNCE_DELAY))
+searchInputEl.addEventListener('input', debounce(onSearchInput, DEBOUNCE_DELAY));
