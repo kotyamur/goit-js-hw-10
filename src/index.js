@@ -18,9 +18,9 @@ const countryInfoEl = document.querySelector('.country-info');
 const renderContriesList = (countries) => {
     const markup = countries
       .map(country => {
-        return `<li>
-          <p>${country.flags.svg}</p>
-          <p>${country.name.official}</p>
+          return `<li>
+            <img src="${country.flags.svg}" width="100"/>
+            <p>${country.name.official}</p>
         </li>`;
       })
         .join('');
@@ -39,7 +39,7 @@ const renderContriesInfo = countries => {
     countryInfoEl.innerHTML = markup;
 };
 
-fetchCountries('cana')
+fetchCountries('c')
     .then(countries => {
         console.log(countries)
         console.log(countries.length);
